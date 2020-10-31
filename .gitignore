@@ -1,8 +1,13 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+﻿bin/
+obj/
+.vs/
+.idea/
+*.DotSettings.user
+*.conf.*
 
-/.idea/.idea.BlockLimiter
-/BlockLimiter/bin
-/GameBinaries
-/TorchBinaries
+#NuGet
+/packages/
+!packages/repositories.config
+
+GameBinaries/
+TorchBinaries/
