@@ -173,16 +173,14 @@
     <Compile Include="Settings\BlockLimiterConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="manifest.xml" />
+    <Content Include="postbuild.bat" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\filter.targets" />
-    <ItemGroup>
-        <Content Include="$(ProjectDir)\manifest.xml" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="..\.idea\.idea.BlockLimiter\.idea\.gitignore">
-          <Link>.gitignore</Link>
-        </Content>
-    </ItemGroup>
-    <Target Name="Zip" BeforeTargets="AfterBuild">
-        <MakeDir Directories="$(SolutionDir)\Build\" />
-        <ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(SolutionDir)\Build\$(MSBuildProjectName).zip" Overwrite="true" />
-    </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+      [ -z "$NoDeploy" ] || $(ProjectDir)postbuild.bat $(ProjectName) $(SolutionDir)
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
