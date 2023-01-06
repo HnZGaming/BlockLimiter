@@ -76,13 +76,13 @@ namespace BlockLimiter.Patch
             var remoteUserId = MyEventContext.Current.Sender.Value;
             var playerId = Utilities.GetPlayerIdFromSteamId(remoteUserId);
 
-            if (Block.IsWithinLimits(def, playerId, grid.EntityId, blocksToBuild, out var limitName)) return true;
+            if (Block.IsWithinLimits(def, playerId, grid.EntityId, blocksToBuild, out var limitName, out var description)) return true;
 
             if (remoteUserId == 0 || !MySession.Static.Players.IsPlayerOnline(playerId)) return false;
             
             BlockLimiter.Instance.Log.Info($"Blocked {Utilities.GetPlayerNameFromSteamId(remoteUserId)} from placing {def.ToString().Substring(16)} due to limits");
 
-            Utilities.TrySendDenyMessage(new List<string>{def.ToString().Substring(16)}, limitName, remoteUserId);
+            Utilities.TrySendDenyMessage(new List<string>{def.ToString().Substring(16)}, limitName, description, remoteUserId);
 
             return false;
 
@@ -116,12 +116,12 @@ namespace BlockLimiter.Patch
             var remoteUserId = MyEventContext.Current.Sender.Value;
             var playerId = Utilities.GetPlayerIdFromSteamId(remoteUserId);
 
-            if (Block.IsWithinLimits(def, playerId, grid.EntityId,locations.Count, out var limitName)) return true;
+            if (Block.IsWithinLimits(def, playerId, grid.EntityId,locations.Count, out var limitName, out var description)) return true;
 
             if (remoteUserId == 0 || !MySession.Static.Players.IsPlayerOnline(playerId)) return false;
 
             BlockLimiter.Instance.Log.Info($"Blocked {Utilities.GetPlayerNameFromSteamId(remoteUserId)} from placing {def.ToString().Substring(16)} due to limits");
-            Utilities.TrySendDenyMessage(new List<string>{def.ToString().Substring(16)}, limitName, remoteUserId);
+            Utilities.TrySendDenyMessage(new List<string>{def.ToString().Substring(16)}, limitName, description, remoteUserId);
             return false;
 
         }
@@ -161,8 +161,8 @@ namespace BlockLimiter.Patch
 
             var remoteUserId = MyEventContext.Current.Sender.Value;
 
-            if (Block.IsWithinLimits(blockDefinition, owner, builtGrid.EntityId, 1, out var limitName) &&
-                Block.IsWithinLimits(blockDefinition, builder, builtGrid.EntityId, 1, out limitName)) return true;
+            if (Block.IsWithinLimits(blockDefinition, owner, builtGrid.EntityId, 1, out var limitName, out var description) &&
+                Block.IsWithinLimits(blockDefinition, builder, builtGrid.EntityId, 1, out limitName, out description)) return true;
 
             if (remoteUserId == 0) return false;
             var grid = projector.CubeGrid;
@@ -173,7 +173,7 @@ namespace BlockLimiter.Patch
 
             if (!MySession.Static.Players.IsPlayerOnline(playerId)) return false;
 
-            Utilities.TrySendDenyMessage(new List<string>{blockDefinition.ToString().Substring(16)},limitName,remoteUserId);
+            Utilities.TrySendDenyMessage(new List<string>{blockDefinition.ToString().Substring(16)},limitName,description, remoteUserId);
             return false;
 
 

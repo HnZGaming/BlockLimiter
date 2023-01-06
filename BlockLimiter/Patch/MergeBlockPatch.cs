@@ -73,7 +73,7 @@ namespace BlockLimiter.Patch
             if (DateTime.Now - _lastLogTime < TimeSpan.FromSeconds(1)) return false;
             _lastLogTime = DateTime.Now;
             var remoteUserId = MySession.Static.Players.TryGetSteamId(mergeBlock.OwnerId);
-            Utilities.TrySendDenyMessage(blocks,limitName,remoteUserId,count);
+            Utilities.TrySendDenyMessage(blocks,limitName,"",remoteUserId,count);
 
             BlockLimiter.Instance.Log.Info($"Blocked merger between {mergeBlock.CubeGrid?.DisplayName} and {mergeBlock.Other?.CubeGrid?.DisplayName}");
             return false;

@@ -91,7 +91,7 @@ namespace BlockLimiter.Patch
             topGrid.RemoveBlock(top.SlimBlock);
             baseGrid.RemoveBlock(__instance.SlimBlock);
 
-            Utilities.TrySendDenyMessage(blocks,limitName,remoteUserId,count);
+            Utilities.TrySendDenyMessage(blocks,limitName,"",remoteUserId,count);
             return false;
         }
 

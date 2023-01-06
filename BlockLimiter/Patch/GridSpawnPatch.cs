@@ -89,13 +89,13 @@ namespace BlockLimiter.Patch
                 return true;
             }
 
-            if (Grid.CanMerge(grid, gridsToMerge, out var rejectedBlocks, out var rejectedCount, out var limitName))
+            if (Grid.CanMerge(grid, gridsToMerge, out var rejectedBlocks, out var rejectedCount, out var limitName, out var description))
             {
                 return true;
             }
             var playerId = Utilities.GetPlayerIdFromSteamId(remoteUserId);
 
-            Utilities.TrySendDenyMessage(rejectedBlocks,limitName,remoteUserId,rejectedCount);
+            Utilities.TrySendDenyMessage(rejectedBlocks,limitName,description, remoteUserId,rejectedCount);
             BlockLimiter.Instance.Log.Info($"Removed {rejectedCount} blocks from grid spawned by {MySession.Static.Players.TryGetIdentity(playerId)?.DisplayName}");
             return false;
         }
@@ -126,13 +126,14 @@ namespace BlockLimiter.Patch
             if (grids.Count == 0  && BlockLimiterConfig.Instance.BlockType > BlockLimiterConfig.BlockingType.Warn)
             {
                 BlockLimiter.Instance.Log.Info($"Blocked {playerName} from spawning a grid");
-                Utilities.TrySendDenyMessage(new List<string>{gridName}, "Size Violation", remoteUserId, initialBlockCount);
+                Utilities.TrySendDenyMessage(new List<string>{gridName}, "Size Violation","", remoteUserId, initialBlockCount);
                 NetworkManager.RaiseStaticEvent(ShowPasteFailed, new EndpointId(remoteUserId), null);
                 return false;
             }
 
             var playerFaction = MySession.Static.Factions.GetPlayerFaction(playerId);
             string limitName = null;
+            string description = null;
             var removalCount = 0;
             var removedList = new List<string>();
             foreach (var grid in grids)
@@ -157,6 +158,7 @@ namespace BlockLimiter.Patch
                             continue;
                         removedList.Add(blockDef);
                         limitName = limit.Name;
+                        description = limit.ErrorDescription;
                     }
 
                 }
@@ -166,7 +168,7 @@ namespace BlockLimiter.Patch
             
             
             parameters.Entities = grids;
-            Utilities.TrySendDenyMessage(removedList,limitName,remoteUserId,removalCount);
+            Utilities.TrySendDenyMessage(removedList,limitName,description, remoteUserId,removalCount);
             BlockLimiter.Instance.Log.Info($"Removed {removalCount} blocks from grid spawned by {MySession.Static.Players.TryGetIdentity(playerId)?.DisplayName}");
             return true;
         }
@@ -192,7 +194,7 @@ namespace BlockLimiter.Patch
             var player = MySession.Static.Players.TryGetPlayerBySteamId(remoteUserId);
             var playerId = player.Identity.IdentityId;
 
-            if (Block.IsWithinLimits(block, playerId, null,out var limitName) && !Grid.CountViolation(block,playerId))
+            if (Block.IsWithinLimits(block, playerId, null,out var limitName, out var description) && !Grid.CountViolation(block,playerId))
             {
                 return true;
             }
@@ -202,7 +204,7 @@ namespace BlockLimiter.Patch
 
             BlockLimiter.Instance.Log.Info($"Blocked {p} from placing {block}");
 
-            Utilities.TrySendDenyMessage(new List<string>{block.ToString().Substring(16)}, limitName, remoteUserId);
+            Utilities.TrySendDenyMessage(new List<string>{block.ToString().Substring(16)}, limitName, description, remoteUserId);
 
             return false;
         }

@@ -130,7 +130,7 @@ namespace BlockLimiter.Patch
             
             if (BlockLimiterConfig.Instance.BlockOwnershipTransfer)
             {
-                if (!Block.IsWithinLimits(block.BlockDefinition, newOwner, 0,1, out _))
+                if (!Block.IsWithinLimits(block.BlockDefinition, newOwner, 0,1, out _, out _))
                 {
                     
                     Utilities.ValidationFailed();
@@ -170,7 +170,7 @@ namespace BlockLimiter.Patch
                 return true;
             }
 
-            if (!Block.IsWithinLimits(block.BlockDefinition, playerId, 0,1,out _))
+            if (!Block.IsWithinLimits(block.BlockDefinition, playerId, 0,1,out _, out _))
             {
                 Utilities.ValidationFailed();
                 

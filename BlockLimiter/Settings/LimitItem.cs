@@ -35,6 +35,7 @@ namespace BlockLimiter.Settings
         private FilterType _filterType;
         private FilterOperator _limitOperator;
         private string _filterValue;
+        string _errorDescription;
 
 
         public LimitItem()
@@ -143,6 +144,17 @@ namespace BlockLimiter.Settings
             set
             {
                 _limitPlayer = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        [Display(Name = "Error Description", Order = 100, GroupName = "Options", Description = "Text to show players when the limit is reached")]
+        public string ErrorDescription
+        {
+            get => _errorDescription;
+            set
+            {
+                _errorDescription = value;
                 OnPropertyChanged();
             }
         }

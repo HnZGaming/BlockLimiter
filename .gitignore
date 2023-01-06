@@ -1,13 +1,13 @@
-﻿bin/
-obj/
-.vs/
-.idea/
-*.DotSettings.user
-*.conf.*
+﻿**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/*.DotSettings.user
+**/*.conf.*
 
 #NuGet
 /packages/
 !packages/repositories.config
 
-GameBinaries/
-TorchBinaries/
+**/GameBinaries/
+**/TorchBinaries/

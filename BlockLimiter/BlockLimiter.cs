@@ -248,8 +248,7 @@ namespace BlockLimiter
                                 }
                                 catch (Exception ex)
                                 {
-                                        Log.Warn("Handler Problems: {0} - {1}", currentHandler.GetUpdateResolution(),
-                                            ex);
+                                    Log.Warn("Handler Problems: {0} - {1}", currentHandler.GetUpdateResolution(), ex);
                                 }
 
                                 currentHandler.LastUpdate = DateTime.Now;
@@ -286,7 +285,8 @@ namespace BlockLimiter
             _sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
             if (_sessionManager != null)
                 _sessionManager.SessionStateChanged += SessionChanged;
-
+            
+            Log.Info("block limiter init");
         }
 
 

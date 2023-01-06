@@ -213,7 +213,7 @@ namespace BlockLimiter.Patch
 
             var remoteUserId = MyEventContext.Current.Sender.Value;
             var playerId = Utilities.GetPlayerIdFromSteamId(remoteUserId);
-            if (Grid.AllowConversion(grid,out var blocks, out var count, out var limitName) || remoteUserId == 0 || playerId == 0)
+            if (Grid.AllowConversion(grid,out var blocks, out var count, out var limitName, out var description) || remoteUserId == 0 || playerId == 0)
             {
                 var gridId = grid.EntityId;
                 Task.Run(()=>
@@ -225,7 +225,7 @@ namespace BlockLimiter.Patch
                 });
                 return true;
             }
-            Utilities.TrySendDenyMessage(blocks,limitName,remoteUserId,count);
+            Utilities.TrySendDenyMessage(blocks,limitName, description, remoteUserId,count);
             BlockLimiter.Instance.Log.Info(
                 $"Grid conversion blocked from {MySession.Static.Players.TryGetPlayerBySteamId(remoteUserId).DisplayName} due to possible violation");
             return false;
@@ -247,7 +247,7 @@ namespace BlockLimiter.Patch
             }
             var remoteUserId = MyEventContext.Current.Sender.Value;
             var playerId = Utilities.GetPlayerIdFromSteamId(remoteUserId);
-            if (Grid.AllowConversion(grid, out var blocks, out var count,out var limitName) || remoteUserId == 0 || playerId == 0)
+            if (Grid.AllowConversion(grid, out var blocks, out var count,out var limitName, out var description) || remoteUserId == 0 || playerId == 0)
             {
                 var gridId = grid.EntityId;
                 Task.Run(()=>
@@ -259,7 +259,7 @@ namespace BlockLimiter.Patch
                 });
                 return true;
             }
-            Utilities.TrySendDenyMessage(blocks, limitName, remoteUserId, count);
+            Utilities.TrySendDenyMessage(blocks, limitName, description, remoteUserId, count);
             BlockLimiter.Instance.Log.Info(
                 $"Grid conversion blocked from {MySession.Static.Players.TryGetPlayerBySteamId(remoteUserId).DisplayName} due to possible violation");
             return false;

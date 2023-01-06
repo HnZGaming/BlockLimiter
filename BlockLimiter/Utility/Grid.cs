@@ -288,9 +288,10 @@ namespace BlockLimiter.Utility
             return true;
 
         }
-        public static bool CanMerge(MyCubeGrid grid1, List<MyObjectBuilder_CubeGrid> gridsToMerge, out List<string>blocks, out int count, out string limitName)
+        public static bool CanMerge(MyCubeGrid grid1, List<MyObjectBuilder_CubeGrid> gridsToMerge, out List<string>blocks, out int count, out string limitName, out string description)
         {
             limitName = null;
+            description = null;
             blocks = new List<string>();
             count = 0;
             if (grid1 == null || gridsToMerge.Count == 0) return true;
@@ -345,6 +346,7 @@ namespace BlockLimiter.Utility
             foreach (var limit in BlockLimiterConfig.Instance.AllLimits)
             {
                 limitName = limit.Name;
+                description = limit.ErrorDescription;
                 if (!limit.LimitGrids) continue;
 
                 if (limit.IsExcepted(grid1)  || !limit.IsGridType(grid1)) continue;
@@ -365,9 +367,10 @@ namespace BlockLimiter.Utility
 
         }
 
-        public static bool AllowConversion(MyCubeGrid grid, out List<string> blocks, out int count, out string limitName )
+        public static bool AllowConversion(MyCubeGrid grid, out List<string> blocks, out int count, out string limitName, out string description)
         {
             limitName = null;
+            description = null;
             blocks = new List<string> {"All blocks - Size Violation"};
             if (IsSizeViolation(grid,true, out count)) return false;
 
@@ -376,6 +379,7 @@ namespace BlockLimiter.Utility
                 if (limit.IsExcepted(grid)) continue;
 
                 limitName = limit.Name;
+                description = limit.ErrorDescription;
                 if (!limit.LimitGrids) continue;
                 switch (limit.GridTypeBlock)
                 {

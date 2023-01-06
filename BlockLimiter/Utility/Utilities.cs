@@ -37,34 +37,41 @@ namespace BlockLimiter.Utility
             var returnMsg = "";
 
 
-            returnMsg = msg.Replace("{BC}", count.ToString()).Replace("{L}",limitName).Replace("{BL}", string.Join("\n", blockList));
+            returnMsg = msg
+                .Replace("{BC}", count.ToString())
+                .Replace("{L}",limitName)
+                .Replace("{BL}", string.Join("\n", blockList));
 
 
             return returnMsg;
         }
 
-        public static void TrySendDenyMessage(List<string> blockList, string limitName, 
-            ulong remoteUserId = 0, int count = 1)
+        public static void TrySendDenyMessage(List<string> blockList, string limitName, string description, ulong remoteUserId = 0, int count = 1)
         {
             if (remoteUserId == 0 || !MySession.Static.Players.IsPlayerOnline(GetPlayerIdFromSteamId(remoteUserId))) return;
             
             var msg = GetMessage(BlockLimiterConfig.Instance.DenyMessage,blockList,limitName, count);
+            if (description != null && !string.IsNullOrEmpty(description))
+            {
+                msg = $"{description}\n{msg}";
+            }
 
-            BlockLimiter.Instance.Torch.CurrentSession.Managers.GetManager<ChatManagerServer>()?
-                .SendMessageAsOther(BlockLimiterConfig.Instance.ServerName, msg, Color.Red, remoteUserId);
+            var chatManagerServer = BlockLimiter.Instance.Torch.CurrentSession.Managers.GetManager<ChatManagerServer>();
+            chatManagerServer?.SendMessageAsOther(BlockLimiterConfig.Instance.ServerName, msg, Color.Red, remoteUserId);
+
             SendFailSound(remoteUserId);
             ValidationFailed(remoteUserId);
         }
         
-        public static void TrySendProjectionDenyMessage(List<string> blockList, string limitName, 
-            ulong remoteUserId = 0, int count = 1)
+        public static void TrySendProjectionDenyMessage(List<string> blockList, string limitName, ulong remoteUserId = 0, int count = 1)
         {
             if (remoteUserId == 0 || !MySession.Static.Players.IsPlayerOnline(GetPlayerIdFromSteamId(remoteUserId))) return;
             
             var msg = GetMessage(BlockLimiterConfig.Instance.ProjectionDenyMessage,blockList,limitName, count);
 
-            BlockLimiter.Instance.Torch.CurrentSession.Managers.GetManager<ChatManagerServer>()?
-                .SendMessageAsOther(BlockLimiterConfig.Instance.ServerName, msg, Color.Red, remoteUserId);
+            var chatManagerServer = BlockLimiter.Instance.Torch.CurrentSession.Managers.GetManager<ChatManagerServer>();
+            chatManagerServer?.SendMessageAsOther(BlockLimiterConfig.Instance.ServerName, msg, Color.Red, remoteUserId);
+
             SendFailSound(remoteUserId);
             ValidationFailed(remoteUserId);
         }

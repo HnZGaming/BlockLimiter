@@ -40,9 +40,10 @@ namespace BlockLimiter.Utility
             BlockLimiter.Instance.Log.Info($"Turned off {block.BlockDefinition?.Id.ToString().Substring(16)} from {block.CubeGrid?.DisplayName}");
         }
 
-        public static bool IsWithinLimits(MyCubeBlockDefinition block, long playerId, MyObjectBuilder_CubeGrid grid, out string limitName)
+        public static bool IsWithinLimits(MyCubeBlockDefinition block, long playerId, MyObjectBuilder_CubeGrid grid, out string limitName, out string description)
         {
             limitName = string.Empty;
+            description = string.Empty;
             var allow = true;
             if (block == null) return true;
             var faction = MySession.Static.Factions.GetPlayerFaction(playerId);
@@ -52,6 +53,7 @@ namespace BlockLimiter.Utility
             foreach (var item in BlockLimiterConfig.Instance.AllLimits)
             {
                 limitName = item.Name;
+                description = item.ErrorDescription;
                 if (item.BlockList.Count == 0 || !item.IsMatch(block)) continue;
                 
                 if (item.IsExcepted(playerId) || (grid != null && item.IsExcepted(grid.EntityId)))
@@ -112,9 +114,10 @@ namespace BlockLimiter.Utility
             
         }
 
-        public static bool IsWithinLimits(MyCubeBlockDefinition def, long ownerId, long gridId, int count, out string limit)
+        public static bool IsWithinLimits(MyCubeBlockDefinition def, long ownerId, long gridId, int count, out string limit, out string description)
         {
             limit = string.Empty;
+            description = string.Empty;
             if (def == null || Math.Abs(ownerId + gridId) < 1) return true;
             
             var ownerFaction = MySession.Static.Factions.GetPlayerFaction(ownerId);
@@ -134,6 +137,7 @@ namespace BlockLimiter.Utility
             foreach (var item in BlockLimiterConfig.Instance.AllLimits)
             {
                 limit = item.Name;
+                description = item.ErrorDescription;
                 if (!item.IsMatch(def)) continue;
                 
                 if ((ownerId > 0 && item.IsExcepted(ownerId)) ||
