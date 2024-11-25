@@ -24,6 +24,7 @@ namespace BlockLimiter.Settings
         private bool _limitFaction;
         private bool _limitGrids;
         private bool _limitPlayer;
+        private BlockListSearchType _searchType = BlockListSearchType.Auto;
         private PunishmentType _punishType = PunishmentType.None;
         private GridType _gridType = GridType.AllGrids;
         private string _name;
@@ -77,10 +78,32 @@ namespace BlockLimiter.Settings
                 OnPropertyChanged();
             }
         }
-
+        
+        [Display(GroupName = "Description", Order = 3, Name = "SearchType", Description = "Decides how blocks are matched")]
+        public BlockListSearchType SearchType
+        {
+            get => _searchType;
+            set
+            {
+                _searchType =value;
+                OnPropertyChanged();
+            }
+        }
+        
         
 
-        [Display(GroupName = "Description",Order = 4, Name = "Exceptions", Description = "List of player or grid exception. You can also use entityId.")]
+        [Display(GroupName = "Description", Order =  4,Name = "Limit", Description = "Limit value")]
+        public int Limit
+        {
+            get => _limit;
+            set
+            {
+                _limit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [Display(GroupName = "Description",Order = 5, Name = "Exceptions", Description = "List of player or grid exception. You can also use entityId.")]
         public List<string> Exceptions
         {
             get => _exceptions;
@@ -91,16 +114,7 @@ namespace BlockLimiter.Settings
             }
         }
 
-        [Display(GroupName = "Description", Order =  3,Name = "Limit", Description = "Limit value")]
-        public int Limit
-        {
-            get => _limit;
-            set
-            {
-                _limit = value;
-                OnPropertyChanged();
-            }
-        }
+
 
         #region Options
 
@@ -356,6 +370,11 @@ namespace BlockLimiter.Settings
             return !string.IsNullOrEmpty(displayName) && allExceptions.Contains(displayName);
         }
 
+        /// <summary>
+        /// Matches the block definition with set limit.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <returns></returns>
         internal bool IsMatch(MyCubeBlockDefinition definition)
         {
             if (_blockList.Count == 0 || definition == null) return false;
@@ -374,19 +393,42 @@ namespace BlockLimiter.Settings
                 }
             }
 
-            var defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                definition.Id.ToString().Substring(16), definition.Id.TypeId.ToString().Substring(16),
-                definition.Id.SubtypeId.ToString(), definition.BlockPairName
-            };
+            HashSet<string> defString;
 
-            foreach (var block in _blockList)
+            //assembles a hashset to match the block with the searchtype
+            switch (_searchType)
             {
-                if (string.IsNullOrEmpty(block) || !defString.Contains(block)) continue;
-                return true;
+                case BlockListSearchType.Auto:
+                    defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        definition.Id.ToString().Substring(16), definition.Id.TypeId.ToString().Substring(16),
+                        definition.Id.SubtypeId.ToString(), definition.BlockPairName
+                    }; break;
+                case BlockListSearchType.PairNames:
+                    defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        definition.BlockPairName
+                    }; break;
+                case BlockListSearchType.TypeId:
+                    defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        definition.Id.TypeId.ToString().Substring(16),
+                    }; break;
+                case BlockListSearchType.SubTypeId:
+                    defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        definition.Id.SubtypeId.ToString()
+                    }; break;
+                default:
+                    defString = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        definition.Id.ToString().Substring(16), definition.Id.TypeId.ToString().Substring(16),
+                        definition.Id.SubtypeId.ToString(), definition.BlockPairName
+                    }; break;
             }
 
-            return false;
+
+            return _blockList.Any(block => !string.IsNullOrEmpty(block) && defString.Contains(block));
         }
 
         internal bool IsFilterType(MyCubeGrid grid)
@@ -606,6 +648,13 @@ namespace BlockLimiter.Settings
 
         #region Enum
 
+        public enum BlockListSearchType
+        {
+            Auto,
+            PairNames,
+            TypeId,
+            SubTypeId
+        }
         public enum PunishmentType
         {
             None,
