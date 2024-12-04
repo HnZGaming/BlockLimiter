@@ -175,7 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="manifest.xml" />
-    <Content Include="postbuild.bat" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
