@@ -2,6 +2,10 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Version>1.8.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DE2E11C6-7DBD-46F8-A707-81D94C6FACE1}</ProjectGuid>
@@ -171,15 +175,29 @@
     <Compile Include="Patch\BuildBlockPatch.cs" />
     <Compile Include="Patch\GridSpawnPatch.cs" />
     <Compile Include="Settings\BlockLimiterConfig.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="manifest.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-      [ -z "$NoDeploy" ] || $(ProjectDir)postbuild.bat $(ProjectName) $(SolutionDir)
+      setlocal
+
+      set ManifestFile=$(ProjectDir)manifest.xml
+      set ZipFile=$(TargetDir)$(ProjectName)-$(Version).zip
+      set PluginsPath=C:/torch-server/Plugins
+
+      powershell -ExecutionPolicy Bypass -Command "[xml]$xml = Get-Content '%ManifestFile%'; $xml.PluginManifest.Version = 'v$(Version)'; $xml.Save('%ManifestFile%');"
+      powershell -ExecutionPolicy Bypass -Command "Compress-Archive -Path '*.dll', '*.pdb', '*.xml', '%ManifestFile%' -DestinationPath '%ZipFile%' -Force"
+
+      powershell -ExecutionPolicy Bypass -Command "Get-ChildItem -Path '%PluginsPath%' -Filter '$(ProjectName)-*.zip' | Remove-Item -Force"
+      copy /Y "%ZipFile%" "%PluginsPath%"
+
+      endlocal
     </PostBuildEvent>
   </PropertyGroup>
 </Project>
