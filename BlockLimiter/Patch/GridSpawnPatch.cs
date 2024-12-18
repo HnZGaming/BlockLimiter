@@ -141,6 +141,7 @@ namespace BlockLimiter.Patch
                 foreach (var limit in BlockLimiterConfig.Instance.AllLimits)
                 {
                     var fCount = 0;
+                    var localRemovalCount = 0;
 
                     if (limit.IsExcepted(playerId)) continue;
                     var matchBlocks = new HashSet<MyObjectBuilder_CubeBlock>(grid.CubeBlocks.Where(x => limit.IsMatch(Utilities.GetDefinition(x))));
@@ -150,8 +151,11 @@ namespace BlockLimiter.Patch
 
                     foreach (var block in matchBlocks)
                     {
-                        if (Math.Abs(matchBlocks.Count + pCount - removalCount) <= limit.Limit && Math.Abs(fCount + matchBlocks.Count - removalCount) <= limit.Limit) break;
-                        removalCount++;
+                        var p = Math.Abs(matchBlocks.Count + pCount - localRemovalCount);
+                        var f = Math.Abs(matchBlocks.Count + fCount - localRemovalCount);
+                        if (p <= limit.Limit && f <= limit.Limit) break;
+                        removalCount += 1;
+                        localRemovalCount += 1;
                         var blockDef = Utilities.GetDefinition(block).ToString().Substring(16);
                         grid.CubeBlocks.Remove(block);
                         if (removedList.Contains(blockDef))
